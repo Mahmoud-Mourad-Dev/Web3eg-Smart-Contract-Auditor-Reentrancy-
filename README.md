@@ -138,7 +138,7 @@ contract Bank {
     }
 }
 ```
-You can also use a reentrancy guard from OpenZeppelin to add an extra layer of protection:
+- You can also use a reentrancy guard from OpenZeppelin to add an extra layer of protection:
 
 ```solidity
 //SPDX-License-Identifier: MIT
