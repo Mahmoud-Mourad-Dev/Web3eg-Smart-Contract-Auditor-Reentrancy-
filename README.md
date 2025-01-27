@@ -113,4 +113,30 @@ contract DeployAttack is Script{
 
 ``` cast balance <BANK_CONTRACT_ADDRESS> --rpc-url http://127.0.0.1:8545 ```
 
+- How to Fix the Vulnerability:
+```solidity
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+contract Bank {
+    mapping(address => uint256) public balances;
+
+    function depositEth() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdrawEth() public {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "No balance to withdraw");
+
+        // Effects: Update the state before sending Ether
+        balances[msg.sender] = 0;
+
+        // Interactions: Send Ether after updating the state
+        (bool sent, ) = msg.sender.call{value: amount}("");
+        require(sent, "Failed to send Ether");
+    }
+}
+```
+
 
