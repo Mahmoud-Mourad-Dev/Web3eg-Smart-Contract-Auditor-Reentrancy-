@@ -138,5 +138,31 @@ contract Bank {
     }
 }
 ```
+You can also use a reentrancy guard from OpenZeppelin to add an extra layer of protection:
+
+```solidity
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract Bank is ReentrancyGuard {
+    mapping(address => uint256) public balances;
+
+    function depositEth() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdrawEth() public nonReentrant {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "No balance to withdraw");
+
+        balances[msg.sender] = 0;
+
+        (bool sent, ) = msg.sender.call{value: amount}("");
+        require(sent, "Failed to send Ether");
+    }
+}
+```
 
 
